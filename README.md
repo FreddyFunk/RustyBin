@@ -1,5 +1,5 @@
 # RustyBin
-RustyBin is a simple yet effective REST API solution that allows for the easy storage and management of files with a size of a couple megabytes. It aims to provide a fast and seamless experience for users seeking to store single files.
+RustyBin is a simple yet effective REST API solution that allows for easy storage and management of files with a size of a couple of megabytes. It aims to provide a fast and seamless experience for users seeking to store single files.
 
 # Usage
 RustyBin manages files by a `file_id` which is represented as an universally unique identifier ([UUID v4](https://crates.io/crates/uuid)) via the API. This allows users to store files with identical filenames or upload identical files and overwrite them later with different files.
