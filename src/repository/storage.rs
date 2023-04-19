@@ -13,7 +13,7 @@ pub async fn load_file(path: String, file_id: Uuid) -> std::io::Result<(String, 
     }).collect::<Vec<String>>();
 
     if files.len() != 1 {
-        // TODO: Do a proper logging here
+        log::error!("Multiple files for UUID: {}. Expected 1 file, found {} files.", file_id, files.len());
         return Err(ErrorKind::Other.into());
     }
 

@@ -23,9 +23,14 @@ pub async fn get_file(file_id: web::Path<String>, config: web::Data<Config>) -> 
     match storage::load_file(config.data_path.clone(), id).await {
         Ok((_file_name, file_content)) => return HttpResponse::Ok().body(file_content),
         Err(e) => match e.kind() {
-            ErrorKind::NotFound => return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id)),
-            // TODO: logging errors
-            _ => return HttpResponse::InternalServerError().finish(),
+            ErrorKind::NotFound => {
+                log::info!("File with UUID {} not found.", file_id);
+                return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id));
+            },
+            _ => {
+                log::error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            },
         }
     };
 }
@@ -48,7 +53,10 @@ pub async fn post_file(
 
     match storage::store_file(config.data_path.clone(), temp_file_path, file_name.to_string()).await {
         Ok(id) => HttpResponse::Ok().body(format!("{}", id)),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            log::error!("{}", e);
+            return HttpResponse::InternalServerError().finish();
+        },
     }
 }
 
@@ -75,9 +83,14 @@ pub async fn put_file(file_id: web::Path<String>,
     match storage::overwrite_file(config.data_path.clone(), temp_file_path, file_name.to_string(), id).await {
         Ok(_) => HttpResponse::Ok().body(format!("Successfully update file_id {} with {}.", file_id, file_name)),
         Err(e) => match e.kind() {
-            ErrorKind::NotFound => return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id)),
-            // TODO: logging errors
-            _ => return HttpResponse::InternalServerError().finish(),
+            ErrorKind::NotFound =>  {
+                log::error!("File with UUID {} not found.", file_id);
+                return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id));
+            },
+            _ =>  {
+                log::error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            },
         }
     }
 }
@@ -96,9 +109,14 @@ pub async fn delete_file(file_id: web::Path<String>, config: web::Data<Config>) 
     match storage::delete_file(config.data_path.clone(), id).await {
         Ok(_) => HttpResponse::Ok().body(format!("Successfully delete file_id {}.", file_id)),
         Err(e) => match e.kind() {
-            ErrorKind::NotFound => return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id)),
-            // TODO: logging errors
-            _ => return HttpResponse::InternalServerError().finish(),
+            ErrorKind::NotFound =>  {
+                log::error!("File with UUID {} not found.", file_id);
+                return HttpResponse::NotFound().body(format!("File with UUID {} not found.", file_id));
+            },
+            _ =>  {
+                log::error!("{}", e);
+                return HttpResponse::InternalServerError().finish();
+            },
         }
     }
 }

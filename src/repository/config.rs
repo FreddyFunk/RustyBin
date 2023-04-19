@@ -63,13 +63,13 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
             config = serde_yaml::from_reader(reader)?;
         }
         Err(ref error) if error.kind() == ErrorKind::NotFound => {
-            // Log a warning when no config file is not found
-            eprintln!("Warning: config file not found. Using default values.");
+            log::warn!("Warning: config file not found. Using default values.");
             config = serde_yaml::from_str(&"")?;
             
         }
         Err(error) => {
             // Return an error for any other io error
+            log::error!("{}", error);
             return Err(Box::new(error));
         }
     }
